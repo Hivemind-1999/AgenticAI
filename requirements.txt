@@ -1,0 +1,19 @@
+# --- Core Orchestration ---
+langchain
+langgraph
+crewai
+
+# --- Brains & Formatting ---
+openai
+instructor
+pydantic
+
+# --- The "Eyes" (Scraping) ---
+requests
+beautifulsoup4
+firecrawl-py
+playwright
+
+# --- Local Memory ---
+chromadb
+sentence-transformers
