@@ -17,3 +17,6 @@ playwright
 # --- Local Memory ---
 chromadb
 sentence-transformers
+
+# --- Environment ---
+python-dotenv

@@ -1,8 +1,15 @@
 import instructor
+import os
+from dotenv import load_dotenv
 from openai import OpenAI
 from database import query_events
 
-client = instructor.patch(OpenAI(api_key="YOUR_API_KEY"))
+load_dotenv()
+
+client = instructor.patch(OpenAI(
+    api_key=os.getenv("OPENAI_API_KEY"),
+    base_url="https://openrouter.ai/api/v1"
+))
 
 def get_vegas_recommendation(user_request: str):
     # 1. Semantic Search: Find events related to the request
@@ -15,10 +22,9 @@ def get_vegas_recommendation(user_request: str):
     # 3. Generation: The LLM acts as the Concierge
     # Using gpt-4o-mini keeps your $100 budget intact for months.
     response = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="google/gemma-3-4b-it:free",
         messages=[
-            {"role": "system", "content": "You are a helpful Las Vegas local. Use the provided event list to answer the user."},
-            {"role": "user", "content": f"User Request: {user_request}\n\nAvailable Events:\n{context}"}
+            {"role": "user", "content": f"You are a helpful Las Vegas local. Use the provided event list to answer the user.\n\nUser Request: {user_request}\n\nAvailable Events:\n{context}"}
         ]
     )
     

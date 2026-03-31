@@ -40,7 +40,7 @@ def query_events(user_query: str, n_results: int = 3):
         query_texts=[user_query],
         n_results=n_results
     )
-    return results['metadatas']
+    return results['metadatas'][0]  # Return flat list of dicts for single query
 
 def cleanup_old_events():
     now_iso = datetime.now().isoformat()

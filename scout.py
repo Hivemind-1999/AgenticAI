@@ -10,14 +10,14 @@ def get_meetup_events(target_count=50):
     now = datetime.now().astimezone()
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True) # Set to False if you want to watch
+        browser = p.chromium.launch(headless=False) # Set to False if you want to watch
         context = browser.new_context(
             viewport={'width': 1280, 'height': 800},
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         )
         page = context.new_page()
         
-        page.goto(url, wait_until="networkidle")
+        page.goto(url, wait_until="domcontentloaded")
         
         # Quick check for the empty-results trap
         page.wait_for_timeout(2000)
@@ -90,8 +90,8 @@ if __name__ == "__main__":
         save_events_to_db(results)
         print("Scouted and Stored!")
         
-    #results.sort(key=lambda x: x.start_time)
+    results.sort(key=lambda x: x.start_time)
     
-    #print(f"Total Events Found: {len(results)}")
-    #for e in results:
-    #    print(f"{e.start_time.strftime('%m/%d %I:%M %p')} | {e.price} | {e.name}")
+    print(f"Total Events Found: {len(results)}")
+    for e in results:
+        print(f"{e.start_time.strftime('%m/%d %I:%M %p')} | {e.price} | {e.name}")
