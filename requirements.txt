@@ -1,22 +1,15 @@
-# --- Core Orchestration ---
-langchain
-langgraph
-crewai
-
 # --- Brains & Formatting ---
 openai
 instructor
 pydantic
 
-# --- The "Eyes" (Scraping) ---
-requests
-beautifulsoup4
-firecrawl-py
+# --- The "Eyes" (Scraping & Enrichment) ---
 playwright
+tavily-python
 
 # --- Local Memory ---
 chromadb
-sentence-transformers
 
 # --- Environment ---
 python-dotenv
+python-dateutil

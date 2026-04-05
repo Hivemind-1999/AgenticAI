@@ -1,9 +1,8 @@
 from playwright.sync_api import sync_playwright
-from schema import VegasEvent
 from datetime import datetime
 import dateutil.parser
 
-def get_meetup_events(target_count=50):
+def get_meetup_events(target_count=5) -> list[dict]:
     url = "https://www.meetup.com/find/?eventType=inPerson&sortField=DATETIME&location=us--nv--Las+Vegas&source=EVENTS"
     event_list = []
     seen_names = set()
@@ -54,23 +53,33 @@ def get_meetup_events(target_count=50):
                         continue
                     
                     # --- PRICE EXTRACTION ---
-                    # Look for the badge/span containing a '$' sign
                     price_text = "Free"
                     price_element = locator.get_by_text("$")
                     if price_element.count() > 0:
                         price_text = price_element.first.inner_text().strip()
 
+                    # --- ATTENDEES EXTRACTION ---
+                    attendees = None
+                    attendees_element = locator.get_by_text("going")
+                    if attendees_element.count() > 0:
+                        attendees_text = attendees_element.first.inner_text().strip()
+                        # Extract number from "X going" format
+                        import re
+                        match = re.search(r'(\d+)', attendees_text)
+                        if match:
+                            attendees = int(match.group(1))
+
                     link = locator.get_attribute('href') or ""
                     full_link = link if link.startswith('http') else f"https://www.meetup.com{link}"
 
-                    event_list.append(VegasEvent(
-                        name=name,
-                        venue="Las Vegas",
-                        start_time=start_dt.replace(tzinfo=None),
-                        category="Meetup",
-                        link=full_link,
-                        price=price_text # New parameter
-                    ))
+                    event_list.append({
+                        "name": name,
+                        "location": "Las Vegas",
+                        "start_time": start_dt.replace(tzinfo=None),
+                        "link": full_link,
+                        "price": price_text,
+                        "attendees": attendees
+                    })
                     seen_names.add(name)
 
                 except Exception:
@@ -85,7 +94,7 @@ def get_meetup_events(target_count=50):
 if __name__ == "__main__":
     from database import save_events_to_db # Import your new db functions
     
-    results = get_meetup_events(50)
+    results = get_meetup_events(5)
     if results:
         save_events_to_db(results)
         print("Scouted and Stored!")
